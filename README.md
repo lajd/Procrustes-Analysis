@@ -3,10 +3,10 @@ Procrustes analysis is a method for comparing the similarity between two objects
 The transformation is also a matrix, and is constrained to be a particular type of motion (eg. only translations/reflections, permutations, etc.)
 
 This package computes the optimal transformations under the following constraints:
-⋅⋅* Orthogonal
-⋅⋅* Permutation
-⋅⋅* Rotational Orthogonal
-⋅⋅* Symmetric 
-⋅⋅* Two-sided orthogonal
-⋅⋅* Two-sided orthogonal single transformation
-⋅⋅* Two-sided permutation single transformation
+* Orthogonal
+* Permutation
+* Rotational Orthogonal
+* Symmetric 
+* Two-sided orthogonal
+* Two-sided orthogonal single transformation
+* Two-sided permutation single transformation
