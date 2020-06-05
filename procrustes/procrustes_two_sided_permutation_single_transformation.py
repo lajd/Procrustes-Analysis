@@ -5,9 +5,8 @@ from procrustes.procrustes_two_sided_orthogonal_single_transformation import \
     TwoSidedOrthogonalSingleTransformationProcrustes
 from procrustes.procrustes_permutation import PermutationProcrustes
 import numpy as np
-from math import log
-from math import isnan
 import time
+from procrustes.base_utils import hide_zero_padding_array, double_sided_procrustes_error
 
 
 class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
@@ -24,16 +23,32 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
     sided single orthogonal procrustes, where translate_scale is True.
     """
 
-    def __init__(self, array_a, array_b, translate=False, scale=False, preserve_symmetry=True, hide_padding=True, translate_symmetrically=False):
+    def __init__(
+            self,
+            array_a,
+            array_b,
+            translate=False,
+            scale=False,
+            preserve_symmetry=True,
+            hide_padding=True,
+            translate_symmetrically=False
+    ):
         self.hide_padding = hide_padding
         self.translate = translate
         self.scale = scale
         self.preserve_symmetry = preserve_symmetry
         self.translate_symmetrically = translate_symmetrically
 
-        Procrustes.__init__(self, array_a, array_b, translate=self.translate, scale=self.scale,
-                preserve_symmetry=self.preserve_symmetry, hide_padding=self.hide_padding, translate_symmetrically=self.translate_symmetrically)
-
+        Procrustes.__init__(
+            self,
+            array_a,
+            array_b,
+            translate=self.translate,
+            scale=self.scale,
+            preserve_symmetry=self.preserve_symmetry,
+            hide_padding=self.hide_padding,
+            translate_symmetrically=self.translate_symmetrically
+        )
         if (abs(self.array_a - self.array_a.T) > 1.e-10).all() or (abs(self.array_b - self.array_b.T) > 1.e-10).all():
             raise ValueError('Arrays array_a and array_b must both be symmetric for this analysis.')
 
@@ -42,26 +57,17 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
         Calculates the single optimum two-sided permuation transformation matrix in the
         double-sided procrustes problem
 
-        Parameters
-        ----------
-        array_a : ndarray
-            A 2D array representing the array to be transformed (as close as possible to array_b)
-
-        array_b : ndarray
-            A 2D array representing the reference array
-
         Returns
         ----------
         perm_optimum, array_transformed, error
         perm_optimum= the optimum permutation transformation array satisfying the double
              sided procrustes problem. Array represents the closest permutation array to
              u_umeyama given by the permutation procrustes problem
-        array_ transformed = the transformed input array after transformation by perm_optimum
+        array_transformed = the transformed input array after transformation by perm_optimum
         error = the error as described by the double-sided procrustes problem
         """
-        #Timing information
+        # Timing information
         time_start = time.time()
-
 
         # Arrays already translated_scaled
         array_a = self.array_a
@@ -73,7 +79,6 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
         perm_optimum3 = None
 
         """Finding initial guess"""
-
         # Method 1
 
         # Solve for the optimum initial permutation transformation array by finding the closest permutation
@@ -102,8 +107,8 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
 
         # Method 2
         if self.hide_padding:
-            array_a = self.hide_zero_padding_array(array_a)
-            array_b = self.hide_zero_padding_array(array_b)
+            array_a = hide_zero_padding_array(array_a)
+            array_b = hide_zero_padding_array(array_b)
         n_a, m_a = array_a.shape
         diagonals_a = np.diagonal(array_a)
         b = np.zeros((2 * n_a - 1, m_a))
@@ -193,7 +198,7 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
                                 end_while = True
                                 break
                             iteration += 1
-                            print iteration
+                            print(iteration)
                             p_new[i, j] = p_old[i, j] * factor
                         if end_while is True:
                             break
@@ -209,19 +214,19 @@ class TwoSidedPermutationSingleTransformationProcrustes(Procrustes):
                 perm_optimum, array_transformed, total_potential, error, unused_translate_and_or_scale = perm.calculate()
 
                 # Calculate the error
-                error_perm_optimum = self.double_sided_procrustes_error(array_a, array_b, perm_optimum, perm_optimum)
+                error_perm_optimum = double_sided_procrustes_error(array_a, array_b, perm_optimum, perm_optimum)
 
                 if error_perm_optimum < min_error:
                     least_error_perm = perm_optimum
                     min_error = error_perm_optimum
         # Timing
         time_elapsed = time.time() - time_start
-        print 'Analysis Completed with time {0}'.format(time_elapsed)
+        print('Analysis Completed with time {0}'.format(time_elapsed))
         # Map array_a to array_b
         self.map_a_b(least_error_perm.T, least_error_perm, preserve_symmetry=True, translate_symmetrically=self.translate_symmetrically)
 
         # Real Error
         least_error_array_transformed = np.dot(np.dot(least_error_perm.T, self.array_a), least_error_perm)
-        real_error = self.double_sided_procrustes_error(self.a_transformed, self.array_b)
+        real_error = double_sided_procrustes_error(self.a_transformed, self.array_b)
 
         return least_error_perm, least_error_array_transformed, real_error, self.transformation

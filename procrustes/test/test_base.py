@@ -1,7 +1,9 @@
-__author__ = 'Jonny'
+
 
 import unittest
-from procrustes.base import *
+import numpy as np
+from procrustes.base import Procrustes
+from procrustes.base_utils import zero_padding, hide_zero_padding_array, translate_array_to_origin, scale_array, is_diagonalizable, frobenius_norm, centroid, eigenvalue_decomposition
 
 
 class Test(unittest.TestCase):
@@ -25,7 +27,7 @@ class Test(unittest.TestCase):
         assert (abs(procrust.array_b - expected) < 1.e-10).all()
 
         # match the number of rows of the 1st array
-        padded_array2, padded_array1 = procrust.zero_padding(array2, array1, row=True)
+        padded_array2, padded_array1 = zero_padding(array2, array1, row=True)
         assert array1.shape == (2, 2)
         assert array2.shape == (1, 2)
         assert padded_array1.shape == (2, 2)
@@ -36,19 +38,19 @@ class Test(unittest.TestCase):
         # match the number of rows of the 1st array
         array3 = np.arange(8).reshape(2, 4)
         array4 = np.arange(8).reshape(4, 2)
-        padded_array3, padded_array4 = procrust.zero_padding(array3, array4, row=True)
+        padded_array3, padded_array4 = zero_padding(array3, array4, row=True)
         assert array3.shape == (2, 4)
         assert array4.shape == (4, 2)
         assert padded_array3.shape == (4, 4)
         assert padded_array4.shape == (4, 2)
         assert (abs(array4 - padded_array4) < 1.e-10).all()
-        expected = range(8)
+        expected = list(range(8))
         expected.extend([0]*8)
         expected = np.array(expected).reshape(4, 4)
         assert (abs(expected - padded_array3) < 1.e-10).all()
 
         # padding the padded_arrays should not change anything
-        padded_array5, padded_array6 = procrust.zero_padding(padded_array3, padded_array4, row=True)
+        padded_array5, padded_array6 = zero_padding(padded_array3, padded_array4, row=True)
         assert padded_array3.shape == (4, 4)
         assert padded_array4.shape == (4, 2)
         assert padded_array5.shape == (4, 4)
@@ -76,7 +78,7 @@ class Test(unittest.TestCase):
         assert (abs(procrust.array_b - array2) < 1.e-10).all()
 
         # match the number of columns of the 1st array
-        padded_array2, padded_array1 = procrust.zero_padding(array2, array1, column=True)
+        padded_array2, padded_array1 = zero_padding(array2, array1, column=True)
         assert array1.shape == (2, 3)
         assert array2.shape == (2, 1)
         assert padded_array1.shape == (2, 3)
@@ -87,19 +89,19 @@ class Test(unittest.TestCase):
         # match the number of columns of the 1st array
         array3 = np.arange(8).reshape(8, 1)
         array4 = np.arange(8).reshape(2, 4)
-        padded_array3, padded_array4 = procrust.zero_padding(array3, array4, row=False, column=True)
+        padded_array3, padded_array4 = zero_padding(array3, array4, row=False, column=True)
         assert array3.shape == (8, 1)
         assert array4.shape == (2, 4)
         assert padded_array3.shape == (8, 4)
         assert padded_array4.shape == (2, 4)
         assert (abs(array4 - padded_array4) < 1.e-10).all()
-        expected = range(8)
+        expected = list(range(8))
         expected.extend([0]*24)
         expected = np.array(expected).reshape(4, 8).T
         assert (abs(expected - padded_array3) < 1.e-10).all()
 
         # padding the padded_arrays should not change anything
-        padded_array5, padded_array6 = procrust.zero_padding(padded_array3, padded_array4, row=False, column=True)
+        padded_array5, padded_array6 = zero_padding(padded_array3, padded_array4, row=False, column=True)
         assert padded_array3.shape == (8, 4)
         assert padded_array4.shape == (2, 4)
         assert padded_array5.shape == (8, 4)
@@ -120,8 +122,7 @@ class Test(unittest.TestCase):
         sym_array1 = np.array([[60,  85,  86], [85, 151, 153], [86, 153, 158]])
         sym_array2 = np.array([[60,  85,  86, 0, 0], [85, 151, 153, 0, 0], [86, 153, 158, 0, 0], [0, 0, 0, 0, 0]])
         assert(sym_array1.shape != sym_array2.shape)
-        procrust = Procrustes(sym_array1, sym_array2)
-        square_1, square_2 = procrust.zero_padding(sym_array1, sym_array2, square=True)
+        square_1, square_2 = zero_padding(sym_array1, sym_array2, square=True)
         assert(square_1.shape == square_2.shape)
         assert(square_1.shape[0] == square_1.shape[1])
 
@@ -130,8 +131,7 @@ class Test(unittest.TestCase):
         sym_array1 = np.dot(sym_part, sym_part.T)
         sym_array2 = sym_array1
         assert(sym_array1.shape == sym_array2.shape)
-        procrust = Procrustes(sym_array1, sym_array2)
-        square_1, square_2 = procrust.zero_padding(sym_array1, sym_array2, row=False, column=False, square=True)
+        square_1, square_2 = zero_padding(sym_array1, sym_array2, row=False, column=False, square=True)
         assert(square_1.shape == square_2.shape)
         assert(square_1.shape[0] == square_1.shape[1])
         assert(abs(sym_array2 - sym_array1) < 1.e-10).all()
@@ -158,12 +158,10 @@ class Test(unittest.TestCase):
         assert(array0.shape != array1.shape)
         # Confirm that after hide_zero_padding has been applied, the arrays are of equal size and
         # are identical
-        procrust = Procrustes(array0, array1)
-        hide_array0 = procrust.hide_zero_padding_array(array0)
-        hide_array1 = procrust.hide_zero_padding_array(array1)
+        hide_array0 = hide_zero_padding_array(array0)
+        hide_array1 = hide_zero_padding_array(array1)
         assert(hide_array0.shape == hide_array1.shape)
         assert(abs(hide_array0 - hide_array1) < 1.e-10).all()
-
         # Define an arbitrary array
         array0 = np.array([[124.25, 625.15, 725.64, 158.51], [536.15, 367.63, 322.62, 257.61],
                            [361.63, 361.63, 672.15, 631.63]])
@@ -179,17 +177,16 @@ class Test(unittest.TestCase):
         assert(array0.shape != array1.shape)
         # Confirm that after hide_zero_padding has been applied, the arrays are of equal size and
         # are identical
-        procrust = Procrustes(array0, array1)
-        hide_array0 = procrust.hide_zero_padding_array(array0)
-        hide_array1 = procrust.hide_zero_padding_array(array1)
+        hide_array0 = hide_zero_padding_array(array0)
+        hide_array1 = hide_zero_padding_array(array1)
         assert(hide_array0.shape == hide_array1.shape)
         assert(abs(hide_array0 - hide_array1) < 1.e-10).all()
 
     # ----------------------------------------------------------
 
-    def test_translate_array(self):
+    def test_translate_array_to_origin(self):
         """
-        This test shows the validity of the function translate_array
+        This test shows the validity of the function translate_array_to_origin
         """
 
         """
@@ -199,7 +196,6 @@ class Test(unittest.TestCase):
         # Define an arbitrary nd array
         array_translated = np.array([[2, 4, 6, 10], [1, 3, 7, 0], [3, 6, 9, 4]])
         # Instantiate Procrustes class with arbitrary second argument
-        procrust = Procrustes(array_translated, array_translated.T)
         # Find the means over each dimension
         column_means_translated = np.zeros(4)
         for i in range(4):
@@ -207,7 +203,7 @@ class Test(unittest.TestCase):
         # Confirm that these means are not all zero
         assert (abs(column_means_translated) > 1.e-8).all()
         # Compute the origin-centred array
-        origin_centred_array, unused = procrust.translate_array(array_translated)
+        origin_centred_array, unused = translate_array_to_origin(array_translated)
         # Confirm that the column means of the origin-centred array are all zero
         column_means_centred = np.ones(4)
         for i in range(4):
@@ -218,8 +214,7 @@ class Test(unittest.TestCase):
         This test verifies that translating an already centred array should return the original array.
         """
         centred_sphere = 25.25 * np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]])
-        procrust = Procrustes(centred_sphere, centred_sphere.T)
-        predicted, unused = procrust.translate_array(centred_sphere)
+        predicted, unused = translate_array_to_origin(centred_sphere)
         expected = centred_sphere
         assert(abs(predicted - expected) < 1.e-8).all()
 
@@ -229,8 +224,7 @@ class Test(unittest.TestCase):
         shift = np.array([[1, 4, 5], [1, 4, 5], [1, 4, 5], [1, 4, 5], [1, 4, 5], [1, 4, 5]])
         translated_sphere = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]])\
             + shift
-        procrust = Procrustes(translated_sphere, translated_sphere.T)
-        predicted, unused = procrust.translate_array(translated_sphere)
+        predicted, unused = translate_array_to_origin(translated_sphere)
         expected = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [-1, 0, 0], [0, -1, 0], [0, 0, -1]])
         assert(abs(predicted - expected) < 1.e-8).all()
 
@@ -245,9 +239,8 @@ class Test(unittest.TestCase):
         # Define the translated original array
         array_translated = array_a + translate
         # Begin translation analysis
-        procrust = Procrustes(array_a, array_translated)
-        predicted1, unused = procrust.translate_array(array_a)
-        predicted2, unused = procrust.translate_array(array_translated)
+        predicted1, unused = translate_array_to_origin(array_a)
+        predicted2, unused = translate_array_to_origin(array_translated)
         assert(abs(predicted1 - predicted2) < 1.e-10).all()
 
     # -----------------------------------------------------
@@ -264,17 +257,16 @@ class Test(unittest.TestCase):
         # Rescale arbitrary array
         array = np.array([[6, 2, 1], [5, 2, 9], [8, 6, 4]])
         # Create (arbitrary second argument) Procrustes instance
-        procrust = Procrustes(array, array.T)
         # Confirm Frobenius normaliation has transformed the array to lie on the unit sphere in
         # the R^(mxn) vector space. We must centre the array about the origin before proceeding
-        array, unused = procrust.translate_array(array)
+        array, unused = translate_array_to_origin(array)
         # Confirm proper centering
         column_means_centred = np.zeros(3)
         for i in range(3):
             column_means_centred[i] = np.mean(array[:, i])
         assert (abs(column_means_centred) < 1.e-10).all()
         # Proceed with Frobenius normalization
-        scaled_array, unused= procrust.scale_array(array)
+        scaled_array, unused = scale_array(array)
         # Confirm array has unit norm
         assert(abs(np.sqrt((scaled_array**2.).sum()) - 1.) < 1.e-10)
         """
@@ -287,9 +279,8 @@ class Test(unittest.TestCase):
         sphere_1 = 230.15 * unit_sphere
         sphere_2 = .06 * unit_sphere
         # Proceed with scaling procedure
-        procrust = Procrustes(sphere_1, sphere_2)
-        scaled1, unused= procrust.scale_array(sphere_1)
-        scaled2, unused = procrust.scale_array(sphere_2)
+        scaled1, unused = scale_array(sphere_1)
+        scaled2, unused = scale_array(sphere_2)
         # Confirm each scaled array has unit Frobenius norm
         assert(abs(np.sqrt((scaled1**2.).sum()) - 1.) < 1.e-10)
         assert(abs(np.sqrt((scaled2**2.).sum()) - 1.) < 1.e-10)
@@ -304,8 +295,7 @@ class Test(unittest.TestCase):
         # Define the scaled original array
         array_scaled = scale * array_a
         # Begin scaling analysis
-        procrust = Procrustes(array_a, array_scaled)
-        scaled_a, unused = procrust.scale_array(array_a, array_scaled)
+        scaled_a, unused = scale_array(array_a, array_scaled)
         assert(abs(scaled_a - array_scaled) < 1.e-10).all()
 
         # Testing
@@ -315,9 +305,8 @@ class Test(unittest.TestCase):
         # Define the scaled original array
         array_scale = 123.45 * array
         # Verify the validity of the translate_scale analysis
-        procrust = Procrustes(array, array_scale)
         # Proceed with analysis, matching array_trans_scale to array
-        predicted, unused = procrust.scale_array(array_scale, array)
+        predicted, unused = scale_array(array_scale, array)
         # array_trans_scale should be identical to array after the above analysis
         expected = array
         assert(abs(predicted - expected) < 1.e-10).all()
@@ -336,11 +325,10 @@ class Test(unittest.TestCase):
         # Define an arbitrary array
         array = np.array([[5, 3, 2, 5], [7, 5, 4, 3]])
         # Proceed with the translate_scale process.
-        procrust = Procrustes(array, array.T)
-        predicted1 = procrust.translate_array(array)[0]
-        predicted1 = procrust.scale_array(predicted1)[0]
-        predicted2 = procrust.translate_array(predicted1)[0]
-        predicted2 = procrust.scale_array(predicted2)[0]
+        predicted1 = translate_array_to_origin(array)[0]
+        predicted1 = scale_array(predicted1)[0]
+        predicted2 = translate_array_to_origin(predicted1)[0]
+        predicted2 = scale_array(predicted2)[0]
         # Perform the process again using the already translated and scaled array as input
         assert(abs(predicted1 - predicted2) < 1.e-10).all()
         """
@@ -354,13 +342,12 @@ class Test(unittest.TestCase):
         # Define the translated and scaled original array
         array_trans_scale = 14.76 * array + shift
         # Verify the validity of the translate_scale analysis
-        procrust = Procrustes(array, array_trans_scale)
         # Returns an object with an origin centred centroid unit Frobenius norm
-        predicted = procrust.translate_array(array_trans_scale)[0]
-        predicted = procrust.scale_array(predicted)[0]
+        predicted = translate_array_to_origin(array_trans_scale)[0]
+        predicted = scale_array(predicted)[0]
         # Returns the same object, origin centred and unit Frobenius norm
-        expected = procrust.translate_array(array)[0]
-        expected = procrust.scale_array(expected)[0]
+        expected = translate_array_to_origin(array)[0]
+        expected = scale_array(expected)[0]
         assert(abs(predicted - expected) < 1.e-10).all()
         """
         This test shows that applying translate scale to an array which is translated
@@ -373,12 +360,11 @@ class Test(unittest.TestCase):
         # Define the translated and scaled original array
         array_trans_scale = 123.45 * array + shift
         # Verify the validity of the translate_scale analysis
-        procrust = Procrustes(array, array_trans_scale)
         # Proceed with analysis, matching array_trans_scale to array
-        predicted1 = procrust.translate_array(array_trans_scale)[0]
-        predicted1 = procrust.scale_array(predicted1)[0]
-        predicted2 = procrust.translate_array(array)[0]
-        predicted2 = procrust.scale_array(predicted2)[0]
+        predicted1 = translate_array_to_origin(array_trans_scale)[0]
+        predicted1 = scale_array(predicted1)[0]
+        predicted2 = translate_array_to_origin(array)[0]
+        predicted2 = scale_array(predicted2)[0]
         # array_trans_scale should be identical to array after the above analysis
         assert(abs(predicted1 - predicted2) < 1.e-10).all()
 
@@ -403,9 +389,8 @@ class Test(unittest.TestCase):
         (dimension of eigenspace = dimension of array) function should return the appropriate decomposition
         """
         array = np.array([[-1./2, 3./2], [3./2, -1./2]])
-        procrust = Procrustes(array, array.T)
-        assert(procrust.is_diagonalizable(array) is True)
-        s_predicted, u_predicted = procrust.eigenvalue_decomposition(array)
+        assert(is_diagonalizable(array) is True)
+        s_predicted, u_predicted = eigenvalue_decomposition(array)
         s_expected = np.array([1, -2])
         assert(abs(np.dot(u_predicted, u_predicted.T) - np.eye(2)) < 1.e-8).all()
         # The eigenvalue decomposition must return the original array
@@ -417,9 +402,8 @@ class Test(unittest.TestCase):
         array again.
         """
         array = np.array([[3, 1], [1, 3]])
-        procrust = Procrustes(array, array.T)
-        assert(procrust.is_diagonalizable(array) is True)
-        s_predicted, u_predicted = procrust.eigenvalue_decomposition(array)
+        assert(is_diagonalizable(array) is True)
+        s_predicted, u_predicted = eigenvalue_decomposition(array)
         s_expected = np.array([4, 2])
         assert(abs(np.dot(u_predicted, u_predicted.T) - np.eye(2)) < 1.e-8).all()
         # The eigenvalue decomposition must return the original array
@@ -434,28 +418,25 @@ class Test(unittest.TestCase):
         This test shows that centroid is not scale-independent
         """
         """
-        This test shows that the centroid of an array after translate_array is applied is the origin.
+        This test shows that the centroid of an array after translate_array_to_origin is applied is the origin.
         """
         # Define an arbitrary array
         array = np.array([[6., 12., 16., 7.], [4., 16., 17., 33.], [5., 17., 12., 16.]])
-        procrust = Procrustes(array, array.T)
-        array_centred, translate = procrust.translate_array(array)
-        assert(abs(procrust.centroid(array_centred)) < 1.e-10).all()
+        array_centred, translate = translate_array_to_origin(array)
+        assert(abs(centroid(array_centred)) < 1.e-10).all()
 
         # Define an arbitrary array
         array = np.array([[6325.26, 1232.46, 1356.75, 7351.64], [4351.36, 1246.63, 1247.63, 3243.64]])
-        procrust = Procrustes(array, array.T)
-        array_centred, translate = procrust.translate_array(array)
-        assert(abs(procrust.centroid(array_centred)) < 1.e-10).all()
+        array_centred, translate = translate_array_to_origin(array)
+        assert(abs(centroid(array_centred)) < 1.e-10).all()
         """
         Even if the array is zero-padded, the correct translation about the origin is obtained.
         """
         # Define an arbitrary, zero-padded array
         array = np.array([[1.5294e-4, 1.242e-5, 1.624e-3, 7.35e-4], [4.534e-5, 1.652e-5, 1.725e-5, 3.314e-4],
                           [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])
-        procrust = Procrustes(array, array.T)
-        array_centred, translate = procrust.translate_array(array)
-        assert(abs(procrust.centroid(array_centred)) < 1.e-10).all()
+        array_centred, translate = translate_array_to_origin(array)
+        assert(abs(centroid(array_centred)) < 1.e-10).all()
 
     # ------------------------------------------------------
 
@@ -471,25 +452,22 @@ class Test(unittest.TestCase):
         array = np.array([[1.5294e-4, 1.242e-5, 1.624e-3, 7.35e-4], [4.534e-5, 1.652e-5, 1.725e-5, 3.314e-4],
                           [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])
 
-        procrust = Procrustes(array, array.T)
-        predicted = procrust.translate_array(array)[0]
-        predicted = procrust.scale_array(predicted)[0]
-        assert(abs(procrust.frobenius_norm(predicted) - 1.) < 1.e-10).all()
+        predicted = translate_array_to_origin(array)[0]
+        predicted = scale_array(predicted)[0]
+        assert(abs(frobenius_norm(predicted) - 1.) < 1.e-10).all()
 
         # Define an arbitrary, zero-padded array
         array = np.array([[6325.26, 1232.46, 1356.75, 7351.64, 0, 0], [4351.36, 1246.63, 1247.63, 3243.64, 0, 0],
                           [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]])
-        procrust = Procrustes(array, array.T)
-        predicted = procrust.translate_array(array)[0]
-        predicted = procrust.scale_array(predicted)[0]
-        assert(abs(procrust.frobenius_norm(predicted) - 1.) < 1.e-10).all()
+        predicted = translate_array_to_origin(array)[0]
+        predicted = scale_array(predicted)[0]
+        assert(abs(frobenius_norm(predicted) - 1.) < 1.e-10).all()
 
         # Define an arbitrary
         array = np.array([[6., 12., 16., 7.], [4., 16., 17., 33.], [5., 17., 12., 16.]])
-        procrust = Procrustes(array, array.T)
-        predicted = procrust.translate_array(array)[0]
-        predicted = procrust.scale_array(predicted)[0]
-        assert(abs(procrust.frobenius_norm(predicted) - 1.) < 1.e-10).all()
+        predicted = translate_array_to_origin(array)[0]
+        predicted = scale_array(predicted)[0]
+        assert(abs(frobenius_norm(predicted) - 1.) < 1.e-10).all()
 
     if __name__ == '__main__':
         unittest.main()

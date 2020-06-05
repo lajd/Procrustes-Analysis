@@ -1,6 +1,3 @@
-
-import numpy as np
-
 """
 Implementation of the Hungarian (Munkres) Algorithm using Python and NumPy
 References: http://www.ams.jhu.edu/~castello/362/Handouts/hungarian.pdf

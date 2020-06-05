@@ -1,6 +1,5 @@
 __author__ = 'Jonny'
 
-import numpy as np
 import unittest
 from procrustes.base import *
 from math import *
@@ -12,10 +11,10 @@ from procrustes.procrustes_two_sided_orthogonal import TwoSidedOrthogonalProcrus
 from procrustes.procrustes_two_sided_orthogonal_single_transformation import TwoSidedOrthogonalSingleTransformationProcrustes
 from procrustes.procrustes_two_sided_permutation_single_transformation import TwoSidedPermutationSingleTransformationProcrustes
 
+
 class Test(unittest.TestCase):
 
     def test_orthogonal(self):
-
         # Define an arbitrary array
         array = np.array([[1, 4], [7, 9]])
         # Define an arbitrary rotational transformation
@@ -44,10 +43,8 @@ class Test(unittest.TestCase):
         ortho = OrthogonalProcrustes(array, array_ortho_transf)
         u_optimum, array_transformed, error, translate_and_or_scale = ortho.calculate()
         # Assert that the analysis returns zero error and is correct
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
-
-
 
         # If the input arrays are equivalent, the transformed array should be equal to the inputs
         # Define arbitrary array
@@ -60,8 +57,6 @@ class Test(unittest.TestCase):
         u_optimum, a_transformed, error, translate_and_or_scale = ortho.calculate()
         # The transformation should return zero error
         assert error < 1.e-10
-
-
 
         # Define an arbitrary array
         array_a = np.array([[-1, 0], [-1, 1], [1, 1], [1, 0]])
@@ -83,7 +78,7 @@ class Test(unittest.TestCase):
         ortho = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
         u_optimum, a_transformed, error, translate_and_or_scale = ortho.calculate()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
 
         # Define an arbitrary array
@@ -106,7 +101,7 @@ class Test(unittest.TestCase):
         ortho = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
         u_optimum, a_transformed, error, translate_and_or_scale = ortho.calculate()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
 
         # Define an arbitrary array
@@ -129,9 +124,8 @@ class Test(unittest.TestCase):
         ortho = OrthogonalProcrustes(array_a, array_b, translate=True, scale=True)
         u_optimum, a_transformed, error, translate_and_or_scale = ortho.calculate()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
-
 
     def test_permutation(self):
 
@@ -158,9 +152,8 @@ class Test(unittest.TestCase):
         assert(abs(np.linalg.det(perm_optimum)) - 1. < 1.e-8)
         assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
-
 
         # If the input arrays are equivalent, the permutation transformation must be the identity
         # Define an arbitrary array
@@ -177,11 +170,10 @@ class Test(unittest.TestCase):
         # The expected permutation-transformation is the 4x4 identity array
         expected = np.eye(4)
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
         # The transformation must be the 4x4 identity
         assert(abs(perm_optimum - expected) < 1.e-8).all()
-
 
         # Define arbitrary array
         array_a = np.array([[1, 5, 8, 4], [1, 5, 7, 2], [1, 6, 9, 3], [2, 7, 9, 4]])
@@ -202,7 +194,7 @@ class Test(unittest.TestCase):
         assert(abs(np.linalg.det(perm_optimum)) - 1. < 1.e-8)
         assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
 
         # Define arbitrary array
@@ -226,9 +218,8 @@ class Test(unittest.TestCase):
         assert(abs(np.linalg.det(perm_optimum)) - 1. < 1.e-8)
         assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
-
 
         # Define arbitrary array
         array_a = np.array([[1.15e-5, 5.15e-5, 8.69e-5, 4.61e-5], [1.58e-5, 5.69e-5, 7.51e-5, 2.16e-5],
@@ -251,9 +242,8 @@ class Test(unittest.TestCase):
         assert(abs(np.linalg.det(perm_optimum)) - 1. < 1.e-8)
         assert(abs([x for x in perm_optimum.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
-
 
     def test_rotational_orthogonal(self):
 
@@ -281,9 +271,8 @@ class Test(unittest.TestCase):
         assert(abs(np.dot(r, r.T) - np.eye(2)) < 1.e-8).all()
         assert(abs(np.linalg.det(r) - 1) < 1.e-10)
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
-
 
         # Define an arbitrary array
         array_a = np.array([[3, 6, 2, 1], [5, 6, 7, 6], [2, 1, 1, 1]])
@@ -297,9 +286,8 @@ class Test(unittest.TestCase):
         assert(abs(np.dot(r, r.T) - np.eye(4)) < 1.e-8).all()
         assert(abs(np.linalg.det(r) - 1) < 1.e-10)
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
-
 
         # Define arbitrary array
         array_a = np.array([[1., 7., 8.], [4., 6., 8.], [7., 9., 4.], [6., 8., 23.]])
@@ -321,9 +309,8 @@ class Test(unittest.TestCase):
         assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
         assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
-
 
         # Define arbitrary array
         array_a = np.array([[31.4, 17.5, 18.4], [34.5, 26.5, 28.6], [17.6, 19.3, 34.6], [46.3, 38.5, 23.3]])
@@ -345,9 +332,8 @@ class Test(unittest.TestCase):
         assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
         assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
-
 
         # Define arbitrary array
         array_a = np.array([[4.35e-5, 1.52e-5, 8.16e-5], [4.14e-6, 16.41e-5, 18.3e-6], [17.53e-5, 29.53e-5, 34.56e-5],
@@ -371,12 +357,10 @@ class Test(unittest.TestCase):
         assert(abs(np.linalg.det(r) - 1.) < 1.e-8)
         assert(abs(np.dot(r, r.T) - np.eye(3)) < 1.e-8).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-10
 
-
     def test_symmetric(self):
-
         # Define arbitrary array
         array = np.array([[1, 2, 4, 5], [5, 7, 3, 3], [1, 5, 1, 9], [1, 5, 2, 7], [5, 7, 9, 0]])
         sym_part = np.array([[1, 7, 4, 9]])
@@ -398,9 +382,8 @@ class Test(unittest.TestCase):
         symmetric_transformation, a_transformed_predicted, error, translate_and_or_scale = symm.calculate()
         assert((symmetric_transformation - symmetric_transformation.T -
                 np.zeros(symmetric_transformation.shape)) < 1.e-10).all()
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
-
 
         # Define an arbitrary array.
         array_a = np.array([[5, 2, 8], [2, 2, 3], [1, 5, 6], [7, 3, 2]])
@@ -418,9 +401,8 @@ class Test(unittest.TestCase):
         x, a_transformed, error, translate_and_or_scale = symm.calculate()
         assert((x - x.T - np.zeros(x.shape)) < 1.e-10).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
-
 
         # Define an arbitrary array.
         array_a = np.array([[245., 122.4, 538.5], [122.5, 252.2, 352.2], [152.5, 515.2, 126.5], [357.5, 312.5, 225.5]])
@@ -438,9 +420,8 @@ class Test(unittest.TestCase):
         x, a_transformed, error, translate_and_or_scale = symm.calculate()
         assert((x - x.T - np.zeros(x.shape)) < 1.e-10).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
-
 
         # Define an arbitrary array.
         array_a = np.array([[5.52e-5, 2.15e-5, 8.12e-5], [2.14e-5, 2.22e-5, 3.14e-5], [1.11e-5, 5.94e-5, 6.58e-5],
@@ -464,7 +445,6 @@ class Test(unittest.TestCase):
         assert error < 1.e-8
 
     def test_two_sided_orthogonal(self):
-
         # Define arbitrary array
         array = np.array([[1., 4., 6.], [6., 1., 4.], [7., 8., 1.]])
         # Define two arbitrary rotation transformations
@@ -504,10 +484,9 @@ class Test(unittest.TestCase):
         assert((np.dot(u1, u1.T) - np.eye(3)) < 1.e-10).all()
         assert((np.dot(u2, u2.T) - np.eye(3)) < 1.e-10).all()
         # The transformation should return zero error
-        print 'this is the error', error
-        print translate_and_or_scale
+        print(('this is the error', error))
+        print(translate_and_or_scale)
         assert error < 1.e-10
-
 
         # Define an arbitrary array
         array_a = np.array([[2, 5, 4, 1], [5, 3, 1, 2], [8, 9, 1, 0], [1, 5, 6, 7]])
@@ -520,9 +499,8 @@ class Test(unittest.TestCase):
         assert((np.dot(u1, u1.T) - np.eye(4)) < 1.e-10).all()
         assert((np.dot(u2, u2.T) - np.eye(4)) < 1.e-10).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
-
 
         # Define an arbitrary array.
         array_a = np.array([[1, 3, 5], [3, 5, 7], [8, 11, 15]])
@@ -547,9 +525,8 @@ class Test(unittest.TestCase):
         assert((np.dot(u1, u1.T) - np.eye(3)) < 1.e-10).all()
         assert((np.dot(u2, u2.T) - np.eye(3)) < 1.e-10).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
-
 
         # Define an arbitrary array.
         array_a = np.array([[141.58, 315.25, 524.14], [253.25, 255.52, 357.51], [358.2, 131.6, 135.59]])
@@ -574,9 +551,8 @@ class Test(unittest.TestCase):
         assert((np.dot(u1, u1.T) - np.eye(3)) < 1.e-10).all()
         assert((np.dot(u2, u2.T) - np.eye(3)) < 1.e-10).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
-
 
         # Define an arbitrary array.
         array_a = np.array([[41.8, 15.5, 24.4], [53.5, 55.2, 57.1], [58.2, 31.6, 35.9]])
@@ -601,12 +577,10 @@ class Test(unittest.TestCase):
         assert((np.dot(u1, u1.T) - np.eye(3)) < 1.e-10).all()
         assert((np.dot(u2, u2.T) - np.eye(3)) < 1.e-10).all()
         # The transformation should return zero error
-        print translate_and_or_scale
+        print(translate_and_or_scale)
         assert error < 1.e-8
 
-
     def test_two_sided_orthogonal_single_transformation(self):
-
         # Define arbitrary symmetric array
         array = np.array([[5, 2, 1], [4, 6, 1], [1, 6, 3]])
         sym_array = np.dot(array, array.T)
@@ -641,7 +615,7 @@ class Test(unittest.TestCase):
         assert(abs(np.dot(u_approx, u_approx.T) - np.eye(3)) < 1.e-8).all()
         assert(abs(np.dot(u_exact, u_exact.T) - np.eye(3)) < 1.e-8).all()
         assert error_best < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define an arbitrary symmetric array
         sym_part = np.array([[2, 5, 4, 1], [5, 3, 1, 2], [8, 9, 1, 0], [1, 5, 6, 7]])
@@ -656,7 +630,7 @@ class Test(unittest.TestCase):
         assert(abs(np.dot(u_approx, u_approx.T) - np.eye(3)) < 1.e-8).all()
         assert(abs(np.dot(u_exact, u_exact.T) - np.eye(3)) < 1.e-8).all()
         assert error_best < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define an arbitrary symmetric array.
         sym_part = np.array([[12.43, 16.15, 17.61], [11.4, 21.5, 16.7], [16.4, 19.4, 14.9]])
@@ -721,7 +695,7 @@ class Test(unittest.TestCase):
             translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
         assert(abs(np.dot(u_exact, u_exact.T) - np.eye(3)) < 1.e-8).all()
         assert error_best < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define an arbitrary symmetric array.
         sym_part = np.array([[124.72, 147.93], [120.5, 59.41]])
@@ -753,7 +727,7 @@ class Test(unittest.TestCase):
             translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
         assert(abs(np.dot(u_exact, u_exact.T) - np.eye(2)) < 1.e-8).all()
         assert error_best < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define an arbitrary symmetric array.
         sym_part = np.array([[6948.184, 1481.51], [2592.51, 125.25]])
@@ -783,7 +757,7 @@ class Test(unittest.TestCase):
             translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
         assert(abs(np.dot(u_exact, u_exact.T) - np.eye(2)) < 1.e-8).all()
         assert error_best < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define an arbitrary symmetric array.
         sym_part = np.array([[6948.184, 1481.51], [2592.51, 125.25]])
@@ -812,7 +786,7 @@ class Test(unittest.TestCase):
             translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
         assert(abs(np.dot(u_exact, u_exact.T) - np.eye(2)) < 1.e-8).all()
         assert error_best < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define an arbitrary symmetric array.
         sym_part = np.array([[124.72, 147.93], [120.5, 59.41]])
@@ -846,7 +820,7 @@ class Test(unittest.TestCase):
                 error_best, translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
         assert(abs(np.dot(u_best, u_best.T) - np.eye(2)) < 1.e-8).all()
         assert error_best < 1.e-8
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define an arbitrary symmetric array.
         sym_part = np.array([[124.72, 147.93], [120.5, 59.41]])
@@ -880,7 +854,7 @@ class Test(unittest.TestCase):
                 error_best, self.transformation = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
         assert(abs(np.dot(u_best, u_best.T) - np.eye(2)) < 1.e-8).all()
         assert error_best < 1.e-8
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define an arbitrary symmetric array.
         sym_part = np.array([[1.2472, 1.4793], [1.205, 2.941], [3.784, 2.295]])
@@ -913,7 +887,7 @@ class Test(unittest.TestCase):
                 error_best, translate_and_or_scale = twosided_single_ortho.calculate(return_u_approx=True, return_u_best=True)
         assert(abs(np.dot(u_best, u_best.T) - np.eye(3)) < 1.e-8).all()
         assert error_best < 1.e-7
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
     """
     Note: it seems like the above method only works if the scale of the shifting factor is << the scale of the original array
@@ -946,7 +920,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(3)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # If the input arrays are equivalent, the permutation transformation must be the identity
         # Define an arbitrary symmetric array
@@ -968,7 +942,7 @@ class Test(unittest.TestCase):
         assert min_error < 1.e-8
         # The transformation must be the 4x4 identity
         assert(abs(least_error_perm - expected) < 1.e-8).all()
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define arbitrary array
         sym_part = np.array([[5., 2., 1.], [4., 6., 1.], [1., 6., 3.]])
@@ -989,7 +963,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(3)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-6
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define arbitrary array
         sym_part = np.array([[14.4, 16.2, 36.5, 53.1], [42.4, 43.1, 25.3, 53.1], [11.3, 26.5, 37.2, 21.1],
@@ -1011,7 +985,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
 
         # Define arbitrary array
@@ -1034,7 +1008,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
 
         # Define arbitrary array
@@ -1057,7 +1031,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define arbitrary array
         sym_part = np.array([[1.45e-3, 1.2e-4, 6.5e-3, 3.1e-3], [2.4e-3, 4.1e-3, 5.3e-4, 5.1e-4], [1.3e-3, 6.5e-4, 3.2e-3, 2.1e-4],
@@ -1079,7 +1053,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-10
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define arbitrary array
         sym_part = np.array([[14.4, 16.2, 36.5, 53.1], [42.4, 43.1, 25.3, 53.1], [11.3, 26.5, 37.2, 21.1],
@@ -1104,7 +1078,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-6
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define arbitrary array
         sym_part = np.array([[1.44, 1.62, 3.65, 5.31], [4.24, 4.31, 2.53, 5.31], [1.13, 2.65, 3.72, 2.11],
@@ -1129,7 +1103,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-8
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define arbitrary array
         sym_part = np.array([[1.44e-3, 1.62e-4, 3.65e-3, 5.31e-3], [4.24e-3, 4.31e-3, 2.53e-3, 5.31e-4], [1.13e-4, 2.65e-4, 3.72e-3, 2.11e-3],
@@ -1153,7 +1127,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-7
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define arbitrary array
         sym_part = np.array([[1.44e-3, 1.62e-4, 3.65e-3, 5.31e-3], [4.24e-3, 4.31e-3, 2.53e-3, 5.31e-4], [1.13e-4, 2.65e-4, 3.72e-3, 2.11e-3],
@@ -1177,7 +1151,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-7
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
         # Define arbitrary array
         sym_part = np.array([[1.44e-5, 1.62e-4, 3.65e-3, 5.31e-3], [4.24e-3, 4.31e-3, 2.53e-5, 5.31e-4], [1.13e-4, 2.65e-4, 3.72e-3, 2.11e-3],
@@ -1201,7 +1175,7 @@ class Test(unittest.TestCase):
         assert(abs([x for x in least_error_perm.flatten().tolist() if x != 0] - np.ones(4)) < 1.e-8).all()
         # Assert that the analysis returns zero error
         assert min_error < 1.e-5
-        print translate_and_or_scale
+        print(translate_and_or_scale)
 
     if __name__ == '__main__':
         unittest.main()

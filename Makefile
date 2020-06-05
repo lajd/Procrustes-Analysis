@@ -1,0 +1,3 @@
+tests:
+	pytest procrustes/test
+

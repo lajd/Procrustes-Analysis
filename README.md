@@ -10,3 +10,5 @@ This package computes the optimal transformations under the following constraint
 * Two-sided orthogonal
 * Two-sided orthogonal single transformation
 * Two-sided permutation single transformation
+
+

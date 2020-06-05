@@ -4,6 +4,7 @@ from procrustes.base import Procrustes
 from procrustes.procrustes_orthogonal import OrthogonalProcrustes
 import numpy as np
 from itertools import product
+from procrustes.base_utils import is_diagonalizable, eigenvalue_decomposition, singular_value_decomposition, double_sided_procrustes_error
 
 
 class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
@@ -41,14 +42,6 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
         Calculates the single optimum two-sided orthogonal transformation matrix in the
         double-sided procrustes problem
 
-        Parameters
-        ----------
-        array_a : ndarray
-            A 2D array representing the array to be transformed (as close as possible to array_b)
-
-        array_b : ndarray
-            A 2D array representing the reference array
-
         Returns
         ----------
         u_umeyama_approx, array_transformed, error
@@ -61,7 +54,7 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
 
         array_a = self.array_a
         array_b = self.array_b
-        if self.is_diagonalizable(array_a) is False or self.is_diagonalizable(array_b) is False:
+        if is_diagonalizable(array_a) is False or is_diagonalizable(array_b) is False:
             return_u_approx = False
 
         error_approx = None
@@ -72,8 +65,8 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
         array_transformed_best = None
         if return_u_approx:
             # Calculate the eigenvalue decomposition of array_a and array_b
-            sigma_a, u_a = self.eigenvalue_decomposition(array_a)
-            sigma_a0, u_a0 = self.eigenvalue_decomposition(array_b)
+            sigma_a, u_a = eigenvalue_decomposition(array_a)
+            sigma_a0, u_a0 = eigenvalue_decomposition(array_b)
             # Compute u_umeyama
             u_umeyama = np.multiply(abs(u_a), abs(u_a0).T)
             # Compute u_umeyama_approx using orthogonal procrustes analysis
@@ -83,14 +76,14 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
             u_approx, array_transformed_ortho, error_ortho, translate_and_or_scale = ortho.calculate()
             u_approx[abs(u_approx) < 1.e-8] = 0
             # Calculate the error
-            error_approx = self.double_sided_procrustes_error(array_a, array_b, u_approx, u_approx)
+            error_approx = double_sided_procrustes_error(array_a, array_b, u_approx, u_approx)
             # Calculate the transformed input array
             array_transformed_approx = np.dot(array_a, u_approx)
 
         if return_u_best:
             # svd of each array
-            u_a, sigma_a, v_trans_a = self.singular_value_decomposition(array_a)
-            u_a0, sigma_a0, v_trans_a0 = self.singular_value_decomposition(array_b)
+            u_a, sigma_a, v_trans_a = singular_value_decomposition(array_a)
+            u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(array_b)
             n = sigma_a.shape[0]
             # Compute all 2^n combinations of diagonal n x n matrices where diagonal elements are from the set {-1,1}
             diag_vec_list = list(product((-1., 1.), repeat=n))
@@ -104,7 +97,7 @@ class TwoSidedOrthogonalSingleTransformationProcrustes(Procrustes):
                 # Compute the trial's optimum transformation array
                 u_trial = np.dot(np.dot(u_a, np.diag(diag_vec_list[i])), u_a0.T)
                 # And the trial's corresponding error
-                error = self.double_sided_procrustes_error(array_a, array_b, u_trial, u_trial)
+                error = double_sided_procrustes_error(array_a, array_b, u_trial, u_trial)
                 if error < tol:
                     u_best = u_trial
                     error_best = error

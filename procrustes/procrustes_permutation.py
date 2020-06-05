@@ -3,6 +3,7 @@ __author__ = 'Jonny'
 import hungarian.hungarian_algorithm as hm
 from procrustes.base import Procrustes
 import numpy as np
+from procrustes.base_utils import single_sided_procrustes_error
 
 
 class PermutationProcrustes(Procrustes):
@@ -16,7 +17,7 @@ class PermutationProcrustes(Procrustes):
         self.translate = translate
         self.scale = scale
         self.preserve_symmetry = preserve_symmetry
-        self.translate_symmetrically=translate_symmetrically
+        self.translate_symmetrically = translate_symmetrically
         Procrustes.__init__(self, array_a, array_b, translate=self.translate, scale=self.scale,
                             preserve_symmetry=self.preserve_symmetry, hide_padding=self.hide_padding,
                             translate_symmetrically=self.translate_symmetrically)
@@ -25,14 +26,6 @@ class PermutationProcrustes(Procrustes):
         """
          Calculates the optimum permutation transformation array in the
         single-sided procrustes problem
-
-        Parameters
-        ----------
-        array_a : ndarray
-            A 2D array representing the array to be transformed (as close as possible to array_b)
-
-        array_b : ndarray
-            A 2D array representing the reference array
 
         Returns
         ----------
@@ -70,6 +63,6 @@ class PermutationProcrustes(Procrustes):
                      preserve_symmetry=self.preserve_symmetry, translate_symmetrically=self.translate_symmetrically)
 
         # Compute the real error
-        real_error = self.single_sided_procrustes_error(self.a_transformed, self.b_in)
+        real_error = single_sided_procrustes_error(self.a_transformed, self.b_in)
 
         return permutation_optimum, self.a_transformed, total_potential, real_error, self.transformation

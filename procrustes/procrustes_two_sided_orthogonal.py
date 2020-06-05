@@ -2,6 +2,7 @@ __author__ = 'Jonny'
 
 from procrustes.base import Procrustes
 import numpy as np
+from procrustes.base_utils import singular_value_decomposition, double_sided_procrustes_error
 
 
 class TwoSidedOrthogonalProcrustes(Procrustes):
@@ -24,14 +25,6 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         Calculates the two optimum two-sided orthogonal transformation arrays in the
         double-sided procrustes problem
 
-        Parameters
-        ----------
-        array_a : ndarray
-            A 2D array representing the array to be transformed (as close as possible to array_b)
-
-        array_b : ndarray
-            A 2D array representing the reference array
-
         Returns
         ----------
         u1, u2, array_transformed, error
@@ -47,8 +40,8 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         array_b = self.array_b
 
         # Calculate the SVDs of array_a and array_b
-        u_a, sigma_a, v_trans_a = self.singular_value_decomposition(array_a)
-        u_a0, sigma_a0, v_trans_a0 = self.singular_value_decomposition(array_b)
+        u_a, sigma_a, v_trans_a = singular_value_decomposition(array_a)
+        u_a0, sigma_a0, v_trans_a0 = singular_value_decomposition(array_b)
 
         # Solve for the optimum orthogonal transformation arrays
         u1 = np.dot(u_a, u_a0.T)
@@ -58,6 +51,6 @@ class TwoSidedOrthogonalProcrustes(Procrustes):
         self.map_a_b(u1.T, u2)
 
         # Compute the real error
-        real_error = self.double_sided_procrustes_error(self.a_transformed, self.b_in)
+        real_error = double_sided_procrustes_error(self.a_transformed, self.b_in)
 
         return u1, u2, self.a_transformed, real_error, self.transformation
